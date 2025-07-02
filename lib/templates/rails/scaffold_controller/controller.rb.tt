@@ -1,0 +1,100 @@
+<% if options[:namespace] -%>
+require_dependency "<%= options[:namespace_path] %>/application_controller"
+<% end -%>
+<% module_namespacing do -%>
+class <%= controller_class_name %>Controller < <%= options[:namespace] ? options[:namespace_class_path].map(&:camelize).join('::') + '::ApplicationController' : 'ApplicationController' %>
+  before_action :set_<%= singular_table_name %>, only: %i[ show edit update destroy ]
+  # Pundit: Autorização
+  before_action :authorize_<%= singular_table_name %>, except: %i[ index new create ]
+  before_action :authorize_<%= singular_table_name %>_creation, only: %i[ new create ]
+
+  # GET <%= route_url %>
+  def index
+    # Filterrific: Aplica filtros e paginação
+    @filterrific = initialize_filterrific(
+      <%= class_name %>,
+      params[:filterrific]
+    ) or return
+
+    @<%= plural_table_name %> = policy_scope(<%= class_name %>)
+                                .filterrific(@filterrific)
+                                .order(created_at: :desc)
+                                .page(params[:page])
+
+    respond_to do |format|
+      format.html
+      format.js
+    end
+  end
+
+  # GET <%= route_url %>/1
+  def show
+    # Pundit: A autorização é feita pelo before_action :authorize_<%= singular_table_name %>
+  end
+
+  # GET <%= route_url %>/new
+  def new
+    @<%= singular_table_name %> = <%= class_name %>.new
+    # Pundit: A autorização é feita pelo before_action :authorize_<%= singular_table_name %>_creation
+  end
+
+  # GET <%= route_url %>/1/edit
+  def edit
+    # Pundit: A autorização é feita pelo before_action :authorize_<%= singular_table_name %>
+  end
+
+  # POST <%= route_url %>
+  def create
+    @<%= singular_table_name %> = <%= class_name %>.new(<%= singular_table_name %>_params)
+    # Pundit: A autorização é feita pelo before_action :authorize_<%= singular_table_name %>_creation
+
+    if @<%= singular_table_name %>.save
+      redirect_to @<%= singular_table_name %>, notice: t('.success', model: <%= class_name %>.model_name.human)
+    else
+      render :new, status: :unprocessable_entity
+    end
+  end
+
+  # PATCH/PUT <%= route_url %>/1
+  def update
+    # Pundit: A autorização é feita pelo before_action :authorize_<%= singular_table_name %>
+    if @<%= singular_table_name %>.update(<%= singular_table_name %>_params)
+      redirect_to @<%= singular_table_name %>, notice: t('.success', model: <%= class_name %>.model_name.human)
+    else
+      render :edit, status: :unprocessable_entity
+    end
+  end
+
+  # DELETE <%= route_url %>/1
+  def destroy
+    # Pundit: A autorização é feita pelo before_action :authorize_<%= singular_table_name %>
+    @<%= singular_table_name %>.destroy!
+    redirect_to <%= index_helper %>_url, notice: t('.success', model: <%= class_name %>.model_name.human)
+  end
+
+  private
+    # Use callbacks to share common setup or constraints between actions.
+    def set_<%= singular_table_name %>
+      @<%= singular_table_name %> = <%= class_name %>.find(params[:id])
+    end
+
+    # Only allow a list of trusted parameters through.
+    def <%= singular_table_name %>_params
+      <%- if attributes_names.empty? -%>
+      params.fetch(:<%= singular_table_name %>, {})
+      <%- else -%>
+      params.require(:<%= singular_table_name %>).permit(<%= attributes_names.map { |name| ":#{name}" }.join(', ') %>)
+      <%- end -%>
+    end
+
+    # Pundit: Autorização específica para o recurso
+    def authorize_<%= singular_table_name %>
+      authorize @<%= singular_table_name %>
+    end
+
+    # Pundit: Autorização específica para a criação de um novo recurso
+    def authorize_<%= singular_table_name %>_creation
+      authorize <%= class_name %>
+    end
+end
+<% end -%>

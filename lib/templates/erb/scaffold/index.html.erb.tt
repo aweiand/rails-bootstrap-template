@@ -1,0 +1,70 @@
+<%
+  # Variáveis auxiliares para I18n e nomes de modelo
+  model_class = controller_name.singularize.classify.constantize
+  model_name_singularized = model_class.model_name.human.downcase
+  model_name_pluralized = model_class.model_name.human(count: 2) # Garante o plural para o título da página
+%>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+  <h1><%%= t(<%= plural_table_name %>.title, model_pluralized: :<%= model_name_pluralized %>) %></h1>
+  <%%= link_to t(<%= plural_table_name %>.new_record, model_singularized: :<%= model_name_singularized %>), new_<%= singular_table_name %>_path, class: "btn btn-primary" %>
+</div>
+
+<%% if @<%= plural_table_name %>.any? %>  
+  <div class="table-responsive d-none d-md-block">
+    <table class="table table-striped table-hover">
+      <thead class="table-dark">
+        <tr>
+          <% # Itera sobre os atributos do modelo para os cabeçalhos da tabela, excluindo id, created_at, updated_at
+          attributes.excluding("id", "created_at", "updated_at").each do |attr| %>
+            <th scope="col"><%%= t(:<%= attr.name %>, model_singularized: :<%= model_name_singularized %>) %></th>
+          <% end %>
+          <th scope="col" class="text-end"><%%= t('common.actions') %></th>
+        </tr>
+      </thead>
+      <tbody>
+        <%% @<%= plural_table_name %>.each do |<%= singular_table_name %>| %> 
+          <tr>
+            <% # Itera sobre os atributos do registro para os dados da tabela
+            attributes.excluding("id", "created_at", "updated_at").each do |attr| %>
+              <td><%%= <%= singular_table_name %>.<%= attr.name %> %></td>
+            <% end %>
+            <td class="text-end text-nowrap">
+              <%%= link_to t('common.show'), <%= singular_table_name %>, class: "btn btn-sm btn-info me-2" %>
+              <%%= link_to t('common.edit'), edit_<%= singular_table_name %>_path(<%= singular_table_name %>), class: "btn btn-sm btn-warning me-2" %>
+              <%%= button_to t('common.delete'), <%= singular_table_name %>, method: :delete, data: { confirm: t('common.confirm') }, class: "btn btn-sm btn-danger" %>
+            </td>
+          </tr>
+        <%% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="d-md-none">
+    <%% @<%= plural_table_name %>.each do |<%= singular_table_name %>| %>
+      <div class="card mb-3 shadow-sm">
+        <div class="card-body">
+          <% # Define o título do cartão de forma mais robusta e legível
+          # A variável singular_table_name no .try e .id já está no contexto do loop
+          card_title = singular_table_name.try(:fullname) || singular_table_name.try(:title) || singular_table_name.try(:id) %>
+          <h5 class="card-title text-capitalize"><%%= card_title %></h5>
+          <ul class="list-group list-group-flush">
+            <% # Itera sobre os atributos do registro para os detalhes do cartão
+            attributes.excluding("id", "created_at", "updated_at").each do |attr| %>
+              <li class="list-group-item"><strong><%%= t(:<%= attr.name %>, model_singularized: :<%= model_name_singularized %>) %>:</strong> <%%= <%= singular_table_name %>.<%= attr.name %> %></li>
+            <% end %>
+          </ul>
+          <div class="d-flex justify-content-between mt-3">
+            <%%= link_to t('common.show'), <%= singular_table_name %>, class: "btn btn-sm btn-info" %>
+            <%%= link_to t('common.edit'), edit_<%= singular_table_name %>_path(<%= singular_table_name %>), class: "btn btn-sm btn-warning" %>
+            <%%= button_to t('common.delete'), <%= singular_table_name %>, method: :delete, data: { confirm: t('common.confirm') }, class: "btn btn-sm btn-danger" %>
+          </div>
+        </div>
+      </div>
+    <%% end %>
+  </div>
+<%% else %>
+  <div class="alert alert-info" role="alert">
+    <%%= t(:<%= plural_table_name %>.no_records, model_singularized: model_name_singularized) %>
+  </div>
+<%% end %>

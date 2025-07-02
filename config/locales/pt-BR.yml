@@ -1,0 +1,41 @@
+pt-BR:
+  common:
+    new: "Novo"
+    edit: "Editar"
+    show: "Mostrar"
+    delete: "Excluir"
+    back: "Voltar"
+    confirm: "Tem certeza?"
+    actions: "Ações"
+  pundit:
+    not_authorized: "Você não tem autorização para realizar esta ação."
+  activerecord:
+    attributes:
+      # Exemplo para um modelo 'product'
+      product:
+        name: "Nome"
+        price: "Preço"
+        description: "Descrição"
+      # Adicione outros modelos aqui
+    errors:
+      models:
+        team:
+          cannot_be_saved: "O %{model} não pôde ser salvo:"
+  teams:
+    index:
+      title: "%{model_pluralized}"
+      no_records: "Nenhum %{model_singularized} encontrado."
+      new_record: "Novo %{model_singularized}"
+      record_id: "Registro %{id}"
+    new:
+      title: "Novo %{model_singularized}"
+    edit:
+      title: "Editando %{model_singularized}"
+    show:
+      title: "%{model_singularized} Detalhes"
+    create:
+      success: "%{model} foi criado(a) com sucesso."
+    update:
+      success: "%{model} foi atualizado(a) com sucesso."
+    destroy:
+      success: "%{model} foi excluído(a) com sucesso."
