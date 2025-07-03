@@ -1,13 +1,12 @@
 <%
   # Variáveis auxiliares para I18n e nomes de modelo
-  model_class = controller_name.singularize.classify.constantize
-  model_name_singularized = model_class.model_name.human.downcase
-  model_name_pluralized = model_class.model_name.human(count: 2) # Garante o plural para o título da página
+  model_name_singularized = singular_table_name
+  model_name_pluralized = plural_table_name
 %>
 
 <div class="d-flex justify-content-between align-items-center mb-4">
-  <h1><%%= t(<%= plural_table_name %>.title, model_pluralized: :<%= model_name_pluralized %>) %></h1>
-  <%%= link_to t(<%= plural_table_name %>.new_record, model_singularized: :<%= model_name_singularized %>), new_<%= singular_table_name %>_path, class: "btn btn-primary" %>
+  <h1><%%= t('<%= plural_table_name %>.title', model_pluralized: :<%= model_name_pluralized %>) %></h1>
+  <%%= link_to t('<%= plural_table_name %>.new_record', model_singularized: :<%= model_name_singularized %>), new_<%= singular_table_name %>_path, class: "btn btn-primary" %>
 </div>
 
 <%% if @<%= plural_table_name %>.any? %>  
@@ -51,7 +50,7 @@
           <ul class="list-group list-group-flush">
             <% # Itera sobre os atributos do registro para os detalhes do cartão
             attributes.excluding("id", "created_at", "updated_at").each do |attr| %>
-              <li class="list-group-item"><strong><%%= t(:<%= attr.name %>, model_singularized: :<%= model_name_singularized %>) %>:</strong> <%%= <%= singular_table_name %>.<%= attr.name %> %></li>
+              <li class="list-group-item"><strong><%%= t('<%= attr.name %>', model_singularized: :<%= singular_table_name %>) %>:</strong> <%%= <%= singular_table_name %>.<%= attr.name %> %></li>
             <% end %>
           </ul>
           <div class="d-flex justify-content-between mt-3">
@@ -65,6 +64,6 @@
   </div>
 <%% else %>
   <div class="alert alert-info" role="alert">
-    <%%= t(:<%= plural_table_name %>.no_records, model_singularized: model_name_singularized) %>
+    <%%= t('<%= plural_table_name %>.no_records', model_singularized: :<%= model_name_singularized %>) %>
   </div>
 <%% end %>

@@ -1,14 +1,14 @@
 <%
-  # Get a list of the attributes for the current resource
-  # (e.g., [:name, :description])
-  attributes = controller_name.singularize.classify.constantize.column_names.reject { |c| %w(id created_at updated_at).include?(c) }
-  model_name_human = controller_name.singularize.classify.constantize.model_name.human
+  # O gerador fornece a variável 'attributes' que é um Array de Rails::Generators::GeneratedAttribute.
+  # Cada GeneratedAttribute já possui .name, .type, .human_name, etc.
+  # Filtramos 'id', 'created_at', 'updated_at' e 'password_digest' que não são campos de formulário.
+  form_attributes = attributes.reject { |attr| %w(id created_at updated_at password_digest).include?(attr.name) }
 %>
 
-<%%= form_with(model: singular_table_name, class: "needs-validation", novalidate: true) do |form| %>
-  <%% if singular_table_name.errors.any? %>
+<%%= form_with(model: <%= singular_table_name %>, class: "needs-validation", novalidate: true) do |form| %>
+  <%% if <%= singular_table_name %>.errors.any? %>
     <div class="alert alert-danger">
-      <h4 class="alert-heading"><%%= t('activerecord.errors.models.singular_table_name.cannot_be_saved', model: model_name_human) %></h4>
+      <h4 class="alert-heading"><%%= t('activerecord.errors.models.<%= singular_table_name %>.cannot_be_saved', model: singular_table_name) %></h4>
       <ul>
         <%% <% singular_table_name %>.errors.each do |error| %>
           <li><%%= error.full_message %></li>
@@ -17,22 +17,28 @@
     </div>
   <%% end %>
 
-  <% attributes.each do |attribute| %>
+  <% form_attributes.each do |attribute| %>
     <div class="mb-3">
-      <%%= form.label attribute, class: "form-label" %>
-      <% if %w(text string).include?(singular_table_name.column_for_attribute(attribute).type.to_s) %>
-        <%%= form.text_field attribute, class: "form-control" %>
-      <% elsif singular_table_name.column_for_attribute(attribute).type.to_s == "text" %>
-        <%%= form.text_area attribute, class: "form-control" %>
-      <% elsif singular_table_name.column_for_attribute(attribute).type.to_s == "integer" %>
-        <%%= form.number_field attribute, class: "form-control" %>
-      <% elsif singular_table_name.column_for_attribute(attribute).type.to_s == "boolean" %>
+      <%%= form.label attribute.name, class: "form-label" %>
+      <%
+        # Usamos attribute.type diretamente, pois já é um objeto GeneratedAttribute
+        field_type = attribute.type
+      %>
+      <% if field_type == :string %>
+        <%%= form.text_field attribute.name, class: "form-control" %>
+      <% elsif field_type == :text %>
+        <%%= form.text_area attribute.name, class: "form-control" %>
+      <% elsif field_type == :integer || field_type == :float || field_type == :decimal %>
+        <%%= form.number_field attribute.name, class: "form-control" %>
+      <% elsif field_type == :boolean %>
         <div class="form-check form-switch">
-          <%%= form.check_box attribute, class: "form-check-input" %>
-          <%%= form.label attribute, class: "form-check-label" %>
+          <%%= form.check_box attribute.name, class: "form-check-input" %>
+          <%%= form.label attribute.name, class: "form-check-label" %>
         </div>
+      <% elsif field_type == :datetime || field_type == :date || field_type == :time %>
+        <%%= form.datetime_field attribute.name, class: "form-control" %>
       <% else %>
-        <%%= form.text_field attribute, class: "form-control" %>
+        <%%= form.text_field attribute.name, class: "form-control" %>
       <% end %>
     </div>
   <% end %>
