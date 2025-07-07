@@ -16,10 +16,9 @@ class <%= controller_class_name %>Controller < <%= options[:namespace] ? options
       params[:filterrific]
     ) or return
 
-    @<%= plural_table_name %> = policy_scope(<%= class_name %>)
-                                .filterrific(@filterrific)
+    @<%= plural_table_name %> = @filterrific.find
                                 .order(created_at: :desc)
-                                .page(params[:page])
+                                .paginate(params[:page] || nil)
 
     respond_to do |format|
       format.html
@@ -89,12 +88,12 @@ class <%= controller_class_name %>Controller < <%= options[:namespace] ? options
 
     # Pundit: Autorização específica para o recurso
     def authorize_<%= singular_table_name %>
-      authorize @<%= singular_table_name %>
+      # authorize @<%= singular_table_name %>
     end
 
     # Pundit: Autorização específica para a criação de um novo recurso
     def authorize_<%= singular_table_name %>_creation
-      authorize <%= class_name %>
+      # authorize <%= class_name %>
     end
 end
 <% end -%>

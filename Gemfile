@@ -52,6 +52,10 @@ gem 'pundit'
 # https://github.com/jhund/filterrific
 gem 'filterrific'
 
+# Paginate
+# https://github.com/mislav/will_paginate
+gem "will_paginate"
+
 # Para usar .env
 # https://github.com/bkeepers/dotenv
 gem "dotenv-rails", require: "dotenv/load"

@@ -8,9 +8,9 @@
 <%%= form_with(model: <%= singular_table_name %>, class: "needs-validation", novalidate: true) do |form| %>
   <%% if <%= singular_table_name %>.errors.any? %>
     <div class="alert alert-danger">
-      <h4 class="alert-heading"><%%= t('activerecord.errors.models.<%= singular_table_name %>.cannot_be_saved', model: singular_table_name) %></h4>
+      <h4 class="alert-heading"><%%= t('activerecord.errors.models.<%= singular_table_name %>.cannot_be_saved', model: <%= singular_table_name %>) %></h4>
       <ul>
-        <%% <% singular_table_name %>.errors.each do |error| %>
+        <%% <%= singular_table_name %>.errors.each do |error| %>
           <li><%%= error.full_message %></li>
         <%% end %>
       </ul>
@@ -19,26 +19,26 @@
 
   <% form_attributes.each do |attribute| %>
     <div class="mb-3">
-      <%%= form.label attribute.name, class: "form-label" %>
+      <%%= form.label :<%= attribute.name %>, class: "form-label" %>
       <%
         # Usamos attribute.type diretamente, pois já é um objeto GeneratedAttribute
         field_type = attribute.type
       %>
       <% if field_type == :string %>
-        <%%= form.text_field attribute.name, class: "form-control" %>
+        <%%= form.text_field :<%= attribute.name %>, class: "form-control" %>
       <% elsif field_type == :text %>
-        <%%= form.text_area attribute.name, class: "form-control" %>
+        <%%= form.text_area :<%= attribute.name %>, class: "form-control" %>
       <% elsif field_type == :integer || field_type == :float || field_type == :decimal %>
-        <%%= form.number_field attribute.name, class: "form-control" %>
+        <%%= form.number_field :<%= attribute.name %>, class: "form-control" %>
       <% elsif field_type == :boolean %>
         <div class="form-check form-switch">
-          <%%= form.check_box attribute.name, class: "form-check-input" %>
-          <%%= form.label attribute.name, class: "form-check-label" %>
+          <%%= form.check_box :<%= attribute.name %>, class: "form-check-input" %>
+          <%%= form.label :<%= attribute.name %>, class: "form-check-label" %>
         </div>
       <% elsif field_type == :datetime || field_type == :date || field_type == :time %>
-        <%%= form.datetime_field attribute.name, class: "form-control" %>
+        <%%= form.datetime_field :<%= attribute.name %>, class: "form-control" %>
       <% else %>
-        <%%= form.text_field attribute.name, class: "form-control" %>
+        <%%= form.text_field :<%= attribute.name %>, class: "form-control" %>
       <% end %>
     </div>
   <% end %>
