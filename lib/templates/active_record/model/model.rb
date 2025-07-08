@@ -16,13 +16,13 @@ class <%= class_name %> < <%= parent_class_name.classify %>
 	# after_create :save_log
 	# after_update :save_log_update
 	
-	# filterrific(
-	# 	default_filter_params: { sorted_by: "updated_at_asc" },
-	# 	available_filters: [
-	# 		:sorted_by,
-	# 		:search_query,
-	# 	],
-	# )
+	filterrific(
+		default_filter_params: { sorted_by: "updated_at_asc" },
+		available_filters: [
+			:sorted_by,
+			:search_query,
+		],
+	)
 
  	scope :search_query, ->(query) {
 		return nil if query.blank?

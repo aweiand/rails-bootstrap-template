@@ -18,7 +18,7 @@ class <%= controller_class_name %>Controller < <%= options[:namespace] ? options
 
     @<%= plural_table_name %> = @filterrific.find
                                 .order(created_at: :desc)
-                                .paginate(params[:page] || nil)
+                                .paginate(page: getPage, per_page: per_page)
 
     respond_to do |format|
       format.html

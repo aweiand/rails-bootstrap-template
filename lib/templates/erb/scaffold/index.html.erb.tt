@@ -6,7 +6,7 @@
 
 <div class="d-flex justify-content-between align-items-center mb-4">
   <h1><%%= t('<%= plural_table_name %>.title', model_pluralized: :<%= model_name_pluralized %>) %></h1>
-  <%%= link_to t('<%= plural_table_name %>.new_record', model_singularized: :<%= model_name_singularized %>), new_<%= singular_table_name %>_path, class: "btn btn-primary" %>
+  <%%= link_to t('<%= plural_table_name %>.new_record'), new_<%= singular_table_name %>_path, class: "btn btn-primary" %>
 </div>
 
 <%% if @<%= plural_table_name %>.any? %>  
@@ -16,7 +16,7 @@
         <tr>
           <% # Itera sobre os atributos do modelo para os cabeçalhos da tabela, excluindo id, created_at, updated_at
           attributes.excluding("id", "created_at", "updated_at").each do |attr| %>
-            <th scope="col"><%%= t(:<%= attr.name %>, model_singularized: :<%= model_name_singularized %>) %></th>
+            <th scope="col"><%%= t(:<%= attr.name %>) %></th>
           <% end %>
           <th scope="col" class="text-end"><%%= t('common.actions') %></th>
         </tr>
@@ -43,10 +43,7 @@
     <%% @<%= plural_table_name %>.each do |<%= singular_table_name %>| %>
       <div class="card mb-3 shadow-sm">
         <div class="card-body">
-          <% # Define o título do cartão de forma mais robusta e legível
-          # A variável singular_table_name no .try e .id já está no contexto do loop
-          card_title = singular_table_name.try(:fullname) || singular_table_name.try(:title) || singular_table_name.try(:id) %>
-          <h5 class="card-title text-capitalize"><%%= card_title %></h5>
+          <h5 class="card-title text-capitalize"><%%= t('<%= plural_table_name %>.title', model_pluralized: :<%= model_name_pluralized %>) %></h5>
           <ul class="list-group list-group-flush">
             <% # Itera sobre os atributos do registro para os detalhes do cartão
             attributes.excluding("id", "created_at", "updated_at").each do |attr| %>
@@ -62,8 +59,11 @@
       </div>
     <%% end %>
   </div>
+  
+<%%= will_paginate @<%= plural_table_name %> %>
+
 <%% else %>
   <div class="alert alert-info" role="alert">
-    <%%= t('<%= plural_table_name %>.no_records', model_singularized: :<%= model_name_singularized %>) %>
+    <%%= t('<%= plural_table_name %>.no_records') %>
   </div>
 <%% end %>
